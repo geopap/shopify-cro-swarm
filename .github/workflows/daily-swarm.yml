@@ -94,6 +94,25 @@ jobs:
           SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
+      - name: Run Cart & Checkout Recovery Agent
+        uses: anthropics/claude-code-action@v1
+        with:
+          model: claude-sonnet-4-20250514
+          prompt: |
+            You are [cart-checkout-recovery]. Read agents/cart-checkout-recovery/SKILL.md for instructions.
+            Run daily cart and checkout recovery analysis.
+          allowed_tools: 'Read,Write,Bash'
+          max_turns: 30
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GA4_SERVICE_ACCOUNT_KEY: ${{ secrets.GA4_SERVICE_ACCOUNT_KEY }}
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
+          SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
+          HOTJAR_API_KEY: ${{ secrets.HOTJAR_API_KEY }}
+          HOTJAR_SITE_ID: ${{ secrets.HOTJAR_SITE_ID }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
       - name: Commit daily agent outputs
         run: |
           git config user.name "CRO Swarm Bot"

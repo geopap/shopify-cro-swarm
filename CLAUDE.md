@@ -1,6 +1,6 @@
 # Shopify CRO Agent Swarm
 
-Autonomous CRO (Conversion Rate Optimization) agent swarm for any Shopify store. 19 AI agents collect metrics, analyze funnel leaks, generate hypotheses, implement theme changes as PRs, verify results, monitor competitors, optimize email flows, manage inventory, and more — all on autopilot via GitHub Actions.
+Autonomous CRO (Conversion Rate Optimization) agent swarm for any Shopify store. 25 AI agents collect metrics, analyze funnel leaks, generate hypotheses, implement theme changes as PRs, verify results, monitor competitors, optimize email flows, manage inventory, and more — all on autopilot via GitHub Actions.
 
 ## Architecture
 
@@ -14,33 +14,40 @@ Autonomous CRO (Conversion Rate Optimization) agent swarm for any Shopify store.
 
 ```
 Daily
-  05:00 UTC  [data-collector]         → data/snapshots/YYYY-MM-DD.json
-  06:00 UTC  [conductor]              → orchestrates daily cycle → Slack digest
-             [analyst]                → data/analyses/YYYY-MM-DD.json
-             [hypothesis]             → data/hypotheses/YYYY-MM-DD.json
-             [ad-watchdog]            → Slack alert if ROAS below threshold
-             [inventory-merchandising]→ data/inventory-reports/YYYY-MM-DD.json
-             [site-speed-watchdog]    → data/speed-reports/YYYY-MM-DD.json
+  05:00 UTC  [data-collector]          → data/snapshots/YYYY-MM-DD.json
+  06:00 UTC  [conductor]               → orchestrates daily cycle → Slack digest
+             [analyst]                 → data/analyses/YYYY-MM-DD.json
+             [hypothesis]              → data/hypotheses/YYYY-MM-DD.json
+             [ad-watchdog]             → Slack alert if ROAS below threshold
+             [inventory-merchandising] → data/inventory-reports/YYYY-MM-DD.json
+             [site-speed-watchdog]     → data/speed-reports/YYYY-MM-DD.json
+             [cart-checkout-recovery]  → data/cart-recovery-reports/YYYY-MM-DD.json
 
 Weekly
-  Monday     [seo-content]            → keyword opportunities, meta tag PRs
-             [content-writer]         → blog drafts from SEO recommendations
-             [email-optimizer]        → email flow performance report
-             [landing-page-auditor]   → ad-to-page message match audit
-             [review-social-proof]    → review health + social proof recommendations
-             [upsell-crosssell]       → product affinity analysis
-             [pricing-strategist]     → price sensitivity + discount analysis
-  Wednesday  [competitor-monitor]     → competitive intelligence report
+  Monday     [seo-content]             → keyword opportunities, meta tag PRs
+             [content-writer]          → blog drafts from SEO recommendations
+             [email-optimizer]         → email flow performance report
+             [landing-page-auditor]    → ad-to-page message match audit
+             [review-social-proof]     → review health + social proof recommendations
+             [upsell-crosssell]        → product affinity analysis
+             [pricing-strategist]      → price sensitivity + discount analysis
+             [ab-test-manager]         → test plans, monitoring, results
+             [customer-journey]        → multi-session journey mapping
+             [accessibility-auditor]   → WCAG 2.1 compliance checks
+             [retention-winback]       → churn risk + win-back recommendations
+  Wednesday  [competitor-monitor]      → competitive intelligence report
 
 Monthly
-  1st        [customer-cohort]        → cohort LTV + retention analysis
+  1st        [customer-cohort]         → cohort LTV + retention analysis
+             [geo-optimizer]           → geo conversion analysis + localization
 
 Manual
-             [implementer]            → PR on theme repo (requires human approval)
-  7d later   [verifier]               → statistical significance test
+             [brand-analyst]           → brand book (voice, tone, style)
+             [implementer]             → PR on theme repo (requires human approval)
+  7d later   [verifier]                → statistical significance test
 ```
 
-## Agent Roster (18 agents)
+## Agent Roster (25 agents)
 
 ### Core CRO Loop
 | Agent | Model | Schedule | Writes Code? |
@@ -51,6 +58,7 @@ Manual
 | hypothesis | sonnet | Triggered by conductor | No |
 | implementer | opus | Manual trigger | Yes (Liquid/CSS/JS) |
 | verifier | sonnet | Triggered by conductor | No |
+| ab-test-manager | sonnet | Weekly Monday | No |
 
 ### Traffic & Ads
 | Agent | Model | Schedule | Writes Code? |
@@ -71,19 +79,24 @@ Manual
 | email-optimizer | sonnet | Weekly Monday | No |
 | pricing-strategist | sonnet | Weekly Monday | No |
 | upsell-crosssell | sonnet | Weekly Monday | Yes (Liquid) |
+| cart-checkout-recovery | sonnet | Daily | No |
 
 ### Customer Intelligence
 | Agent | Model | Schedule | Writes Code? |
 |-------|-------|----------|-------------|
 | review-social-proof | sonnet | Weekly Monday | Yes (Liquid) |
 | customer-cohort | sonnet | Monthly 1st | No |
+| customer-journey | sonnet | Weekly Monday | No |
 | competitor-monitor | sonnet | Weekly Wednesday | No |
+| retention-winback | sonnet | Weekly Monday | No |
+| geo-optimizer | sonnet | Monthly 1st | No |
 
 ### Operations
 | Agent | Model | Schedule | Writes Code? |
 |-------|-------|----------|-------------|
 | inventory-merchandising | sonnet | Daily | No |
 | site-speed-watchdog | sonnet | Daily | No |
+| accessibility-auditor | sonnet | Weekly Monday | Yes (a11y fixes) |
 
 ## Safety Rails — NON-NEGOTIABLE
 

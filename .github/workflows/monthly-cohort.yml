@@ -40,10 +40,32 @@ jobs:
           GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      - name: Commit cohort report
+      - name: Run Geo & Localization Optimizer
+        uses: anthropics/claude-code-action@v1
+        with:
+          model: claude-sonnet-4-20250514
+          prompt: |
+            You are [geo-optimizer]. Read agents/geo-optimizer/SKILL.md for instructions.
+            Run monthly geo and localization analysis.
+          allowed_tools: 'Read,Write,Bash'
+          max_turns: 50
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GA4_SERVICE_ACCOUNT_KEY: ${{ secrets.GA4_SERVICE_ACCOUNT_KEY }}
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
+          SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
+          GOOGLE_ADS_DEVELOPER_TOKEN: ${{ secrets.GOOGLE_ADS_DEVELOPER_TOKEN }}
+          GOOGLE_ADS_CLIENT_ID: ${{ secrets.GOOGLE_ADS_CLIENT_ID }}
+          GOOGLE_ADS_CLIENT_SECRET: ${{ secrets.GOOGLE_ADS_CLIENT_SECRET }}
+          GOOGLE_ADS_REFRESH_TOKEN: ${{ secrets.GOOGLE_ADS_REFRESH_TOKEN }}
+          GOOGLE_ADS_CUSTOMER_ID: ${{ secrets.GOOGLE_ADS_CUSTOMER_ID }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Commit monthly reports
         run: |
           git config user.name "CRO Swarm Bot"
           git config user.email "bot@shopify-cro-swarm.local"
-          git add data/cohort-reports/
-          git diff --staged --quiet || git commit -m "cohort: monthly analysis $(date +%Y-%m)"
+          git add data/cohort-reports/ data/geo-reports/
+          git diff --staged --quiet || git commit -m "monthly: cohort + geo analysis $(date +%Y-%m)"
           git push

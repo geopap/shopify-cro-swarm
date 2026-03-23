@@ -147,6 +147,68 @@ jobs:
           SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
+      - name: Run A/B Test Manager
+        uses: anthropics/claude-code-action@v1
+        with:
+          model: claude-sonnet-4-20250514
+          prompt: |
+            You are [ab-test-manager]. Read agents/ab-test-manager/SKILL.md for instructions.
+            Run weekly A/B test planning and monitoring.
+          allowed_tools: 'Read,Write,Bash'
+          max_turns: 50
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Run Customer Journey Mapper
+        uses: anthropics/claude-code-action@v1
+        with:
+          model: claude-sonnet-4-20250514
+          prompt: |
+            You are [customer-journey]. Read agents/customer-journey/SKILL.md for instructions.
+            Run weekly customer journey analysis.
+          allowed_tools: 'Read,Write,Bash'
+          max_turns: 50
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GA4_SERVICE_ACCOUNT_KEY: ${{ secrets.GA4_SERVICE_ACCOUNT_KEY }}
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Run Accessibility Auditor
+        uses: anthropics/claude-code-action@v1
+        with:
+          model: claude-sonnet-4-20250514
+          prompt: |
+            You are [accessibility-auditor]. Read agents/accessibility-auditor/SKILL.md for instructions.
+            Run weekly accessibility audit.
+          allowed_tools: 'Read,Write,Bash'
+          max_turns: 50
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PAGESPEED_API_KEY: ${{ secrets.PAGESPEED_API_KEY }}
+          SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
+          SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
+          GITHUB_THEME_REPO: ${{ secrets.GITHUB_THEME_REPO }}
+          GITHUB_THEME_TOKEN: ${{ secrets.GITHUB_THEME_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Run Retention & Win-back Agent
+        uses: anthropics/claude-code-action@v1
+        with:
+          model: claude-sonnet-4-20250514
+          prompt: |
+            You are [retention-winback]. Read agents/retention-winback/SKILL.md for instructions.
+            Run weekly retention and churn analysis.
+          allowed_tools: 'Read,Write,Bash'
+          max_turns: 50
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
+          SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
+          KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
       - name: Commit weekly agent outputs
         run: |
           git config user.name "CRO Swarm Bot"

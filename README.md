@@ -1,6 +1,6 @@
 # Shopify CRO Agent Swarm
 
-Autonomous CRO (Conversion Rate Optimization) agent swarm for Shopify stores. 19 AI agents collect metrics, analyze funnel leaks, generate ranked hypotheses, implement theme changes as PRs, and verify results with statistical tests — all on autopilot via GitHub Actions. Human-approved, data-driven conversion optimization on autopilot.
+Autonomous CRO (Conversion Rate Optimization) agent swarm for Shopify stores. 25 AI agents collect metrics, analyze funnel leaks, generate ranked hypotheses, implement theme changes as PRs, and verify results with statistical tests — all on autopilot via GitHub Actions. Human-approved, data-driven conversion optimization on autopilot.
 
 ## How It Works
 
@@ -15,6 +15,7 @@ Daily
              [ad-watchdog]              Alerts if ROAS drops below thresholds
              [inventory-merchandising]  Flags stockouts, dead stock, reorder alerts
              [site-speed-watchdog]      Tracks Core Web Vitals, alerts on regressions
+             [cart-checkout-recovery]   Analyzes cart→checkout micro-funnel drop-offs
              [conductor]                Sends daily digest to Slack
 
 Weekly (Monday)
@@ -25,21 +26,27 @@ Weekly (Monday)
              [review-social-proof]      Review health + social proof recommendations
              [upsell-crosssell]         Product affinity analysis + recommendations
              [pricing-strategist]       Price sensitivity + discount analysis
+             [ab-test-manager]          Designs tests, monitors running experiments
+             [customer-journey]         Maps multi-session paths to purchase
+             [accessibility-auditor]    WCAG 2.1 compliance checks + fixes
+             [retention-winback]        Churn risk scoring + win-back recommendations
 
 Weekly (Wednesday)
              [competitor-monitor]       Competitive intelligence report
 
 Monthly (1st)
              [customer-cohort]          Cohort LTV + retention analysis
+             [geo-optimizer]            Geo conversion analysis + localization recs
 
 Manual
+             [brand-analyst]            Creates brand book (voice, tone, style)
              [implementer]              Implements approved hypothesis as a theme PR
   7d later   [verifier]                 Statistical significance test → KEEP / REVERT
 ```
 
 You wake up to a Slack digest each morning. If a hypothesis looks good, approve it. The Implementer opens a PR. After 7 days, the Verifier tells you if it worked.
 
-## Agent Roster (19 agents)
+## Agent Roster (25 agents)
 
 ### Core CRO Loop
 
@@ -51,6 +58,7 @@ You wake up to a Slack digest each morning. If a hypothesis looks good, approve 
 | **Hypothesis Generator** | Creates 3-5 ranked CRO hypotheses (PIE framework) | Sonnet | Triggered by Conductor |
 | **Implementer** | Builds Shopify Liquid changes, opens PR | Opus | Manual trigger only |
 | **Verifier** | Runs chi-squared/t-test after 7 days | Sonnet | Triggered by Conductor |
+| **A/B Test Manager** | Designs tests, calculates sample sizes, monitors experiments | Sonnet | Weekly Monday |
 
 ### Traffic & Ads
 
@@ -74,6 +82,7 @@ You wake up to a Slack digest each morning. If a hypothesis looks good, approve 
 | **Email Optimizer** | Audits Klaviyo/Mailchimp flows, suggests subject line tests | Sonnet | Weekly Monday |
 | **Pricing Strategist** | Analyzes price sensitivity, discount effectiveness (advisory only) | Sonnet | Weekly Monday |
 | **Upsell/Cross-sell** | Product affinity analysis, cart upsell recommendations | Sonnet | Weekly Monday |
+| **Cart & Checkout Recovery** | Analyzes cart→checkout micro-funnel, identifies friction | Sonnet | Daily |
 
 ### Customer Intelligence
 
@@ -81,7 +90,10 @@ You wake up to a Slack digest each morning. If a hypothesis looks good, approve 
 |-------|------|-------|----------|
 | **Review & Social Proof** | Monitors review health, recommends social proof placement | Sonnet | Weekly Monday |
 | **Customer Cohort** | Segments customers by LTV, identifies golden path | Sonnet | Monthly 1st |
+| **Customer Journey** | Maps multi-session paths, finds content that converts | Sonnet | Weekly Monday |
 | **Competitor Monitor** | Tracks competitor pricing, ads, and keyword rankings | Sonnet | Weekly Wednesday |
+| **Retention & Win-back** | Churn risk scoring, win-back timing recommendations | Sonnet | Weekly Monday |
+| **Geo Optimizer** | Geo conversion analysis, localization recommendations | Sonnet | Monthly 1st |
 
 ### Operations
 
@@ -89,6 +101,7 @@ You wake up to a Slack digest each morning. If a hypothesis looks good, approve 
 |-------|------|-------|----------|
 | **Inventory & Merchandising** | Stock alerts, dead stock flags, sort order optimization | Sonnet | Daily |
 | **Site Speed Watchdog** | Core Web Vitals tracking, regression alerts | Sonnet | Daily |
+| **Accessibility Auditor** | WCAG 2.1 compliance checks, opens fix PRs | Sonnet | Weekly Monday |
 
 ## Project Structure
 
@@ -101,7 +114,7 @@ shopify-cro-swarm/
 │   ├── weekly-competitor.yml          # Cron: Wednesday 07:00 UTC
 │   ├── monthly-cohort.yml             # Cron: 1st of month
 │   └── implementer.yml               # Manual dispatch only
-├── agents/                            # 19 agent prompt definitions
+├── agents/                            # 25 agent prompt definitions
 │   ├── conductor/SKILL.md
 │   ├── data-collector/SKILL.md
 │   ├── analyst/SKILL.md
@@ -120,7 +133,13 @@ shopify-cro-swarm/
 │   ├── landing-page-auditor/SKILL.md
 │   ├── content-writer/SKILL.md
 │   ├── inventory-merchandising/SKILL.md
-│   └── site-speed-watchdog/SKILL.md
+│   ├── site-speed-watchdog/SKILL.md
+│   ├── ab-test-manager/SKILL.md
+│   ├── customer-journey/SKILL.md
+│   ├── accessibility-auditor/SKILL.md
+│   ├── retention-winback/SKILL.md
+│   ├── geo-optimizer/SKILL.md
+│   └── cart-checkout-recovery/SKILL.md
 ├── data/
 │   ├── snapshots/                     # Daily metric snapshots
 │   ├── analyses/                      # Analyst outputs
@@ -136,6 +155,12 @@ shopify-cro-swarm/
 │   ├── content-reports/               # Content writer outputs
 │   ├── inventory-reports/             # Inventory merchandising outputs
 │   ├── speed-reports/                 # Site speed watchdog outputs
+│   ├── ab-test-reports/               # A/B test manager outputs
+│   ├── journey-reports/               # Customer journey outputs
+│   ├── accessibility-reports/         # Accessibility auditor outputs
+│   ├── retention-reports/             # Retention & win-back outputs
+│   ├── geo-reports/                   # Geo optimizer outputs
+│   ├── cart-recovery-reports/         # Cart & checkout recovery outputs
 │   ├── baselines.json                 # Rolling averages
 │   └── experiment-log.json            # All experiments ever run
 ├── scripts/
@@ -281,10 +306,10 @@ Each agent's prompt is in `agents/<name>/SKILL.md`. Edit these to change analysi
 
 | Component | Monthly Cost |
 |-----------|-------------|
-| Claude API (Sonnet for 18 agents) | ~$100-250 |
+| Claude API (Sonnet for 24 agents) | ~$150-350 |
 | Claude API (Opus for Implementer) | ~$20-50 |
 | GitHub Actions | Free tier |
-| **Total** | **~$120-300/mo** |
+| **Total** | **~$170-400/mo** |
 
 ## Tech Stack
 
