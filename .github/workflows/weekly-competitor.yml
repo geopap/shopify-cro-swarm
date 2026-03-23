@@ -1,0 +1,49 @@
+name: Weekly Competitor Monitor
+
+on:
+  schedule:
+    - cron: '0 7 * * 3' # Wednesday 07:00 UTC
+  workflow_dispatch: {} # manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  competitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Run Competitor Monitor
+        uses: anthropics/claude-code-action@v1
+        with:
+          model: claude-sonnet-4-20250514
+          prompt: |
+            You are [competitor-monitor]. Read agents/competitor-monitor/SKILL.md for instructions.
+            Run weekly competitive intelligence report.
+          allowed_tools: 'Read,Write,Bash'
+          max_turns: 50
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          COMPETITOR_URLS: ${{ secrets.COMPETITOR_URLS }}
+          GA4_SERVICE_ACCOUNT_KEY: ${{ secrets.GA4_SERVICE_ACCOUNT_KEY }}
+          GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
+          SEMRUSH_API_KEY: ${{ secrets.SEMRUSH_API_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Commit competitor report
+        run: |
+          git config user.name "CRO Swarm Bot"
+          git config user.email "bot@shopify-cro-swarm.local"
+          git add data/competitor-reports/
+          git diff --staged --quiet || git commit -m "competitor: weekly report $(date +%Y-%m-%d)"
+          git push

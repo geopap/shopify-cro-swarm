@@ -1,17 +1,17 @@
-name: Weekly SEO Review
+name: Monthly Customer Cohort Analysis
 
 on:
   schedule:
-    - cron: '0 7 * * 1' # Monday 07:00 UTC
+    - cron: '0 8 1 * *' # 1st of month 08:00 UTC
   workflow_dispatch: {} # manual trigger
 
 permissions:
   contents: write
 
 jobs:
-  seo:
+  cohort:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - uses: actions/checkout@v4
@@ -23,33 +23,27 @@ jobs:
 
       - run: npm ci
 
-      - name: Run SEO Agent
+      - name: Run Customer Cohort Analyst
         uses: anthropics/claude-code-action@v1
         with:
           model: claude-sonnet-4-20250514
           prompt: |
-            You are [seo-content]. Read agents/seo-content/SKILL.md for instructions.
-            Run weekly SEO review.
+            You are [customer-cohort]. Read agents/customer-cohort/SKILL.md for instructions.
+            Run monthly customer cohort analysis.
           allowed_tools: 'Read,Write,Bash'
           max_turns: 50
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          # Google Search Console
-          GA4_SERVICE_ACCOUNT_KEY: ${{ secrets.GA4_SERVICE_ACCOUNT_KEY }}
-          GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
-          # Shopify
           SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
           SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
-          # GitHub theme repo (for meta tag / content PRs)
-          GITHUB_THEME_REPO: ${{ secrets.GITHUB_THEME_REPO }}
-          GITHUB_THEME_TOKEN: ${{ secrets.GITHUB_THEME_TOKEN }}
-          # Slack
+          GA4_SERVICE_ACCOUNT_KEY: ${{ secrets.GA4_SERVICE_ACCOUNT_KEY }}
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      - name: Commit SEO report outputs
+      - name: Commit cohort report
         run: |
           git config user.name "CRO Swarm Bot"
           git config user.email "bot@shopify-cro-swarm.local"
-          git add data/seo/
-          git diff --staged --quiet || git commit -m "seo: weekly review $(date +%Y-%m-%d)"
+          git add data/cohort-reports/
+          git diff --staged --quiet || git commit -m "cohort: monthly analysis $(date +%Y-%m)"
           git push

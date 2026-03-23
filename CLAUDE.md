@@ -1,6 +1,6 @@
 # Shopify CRO Agent Swarm
 
-Autonomous CRO (Conversion Rate Optimization) agent swarm for any Shopify store. The system collects performance data daily, analyzes funnel leaks against baselines, generates ranked hypotheses, implements approved changes as Shopify theme PRs, and verifies results after 7 days.
+Autonomous CRO (Conversion Rate Optimization) agent swarm for any Shopify store. 19 AI agents collect metrics, analyze funnel leaks, generate hypotheses, implement theme changes as PRs, verify results, monitor competitors, optimize email flows, manage inventory, and more — all on autopilot via GitHub Actions.
 
 ## Architecture
 
@@ -10,32 +10,80 @@ Autonomous CRO (Conversion Rate Optimization) agent swarm for any Shopify store.
 - **Theme repo:** Separate Shopify theme repo — PRs opened by Implementer agent
 - **Notifications:** Slack incoming webhook
 
-## Daily Loop
+## Schedule Overview
 
 ```
-05:00 UTC  [data-collector]  → data/snapshots/YYYY-MM-DD.json
-06:00 UTC  [conductor]       → triggers analyst → hypothesis → ad-watchdog → digest
-           [analyst]         → data/analyses/YYYY-MM-DD.json
-           [hypothesis]      → data/hypotheses/YYYY-MM-DD.json
-           [ad-watchdog]     → Slack alert if ROAS below threshold
-           [conductor]       → Slack daily digest
-Manual     [implementer]     → PR on theme repo (requires human approval)
-7d later   [verifier]        → data/verifications/EXP-XXX.json
-Monday     [seo-content]     → keyword opportunities, meta tag PRs, blog drafts
+Daily
+  05:00 UTC  [data-collector]         → data/snapshots/YYYY-MM-DD.json
+  06:00 UTC  [conductor]              → orchestrates daily cycle → Slack digest
+             [analyst]                → data/analyses/YYYY-MM-DD.json
+             [hypothesis]             → data/hypotheses/YYYY-MM-DD.json
+             [ad-watchdog]            → Slack alert if ROAS below threshold
+             [inventory-merchandising]→ data/inventory-reports/YYYY-MM-DD.json
+             [site-speed-watchdog]    → data/speed-reports/YYYY-MM-DD.json
+
+Weekly
+  Monday     [seo-content]            → keyword opportunities, meta tag PRs
+             [content-writer]         → blog drafts from SEO recommendations
+             [email-optimizer]        → email flow performance report
+             [landing-page-auditor]   → ad-to-page message match audit
+             [review-social-proof]    → review health + social proof recommendations
+             [upsell-crosssell]       → product affinity analysis
+             [pricing-strategist]     → price sensitivity + discount analysis
+  Wednesday  [competitor-monitor]     → competitive intelligence report
+
+Monthly
+  1st        [customer-cohort]        → cohort LTV + retention analysis
+
+Manual
+             [implementer]            → PR on theme repo (requires human approval)
+  7d later   [verifier]               → statistical significance test
 ```
 
-## Agent Roster
+## Agent Roster (18 agents)
 
-| Agent | Model | Writes Code? |
-|-------|-------|-------------|
-| conductor | sonnet | No |
-| data-collector | sonnet | No (runs scripts) |
-| analyst | sonnet | No |
-| hypothesis | sonnet | No |
-| implementer | opus | Yes (Liquid/CSS/JS) |
-| verifier | sonnet | No |
-| seo-content | sonnet | Yes (content/meta) |
-| ad-watchdog | sonnet | No |
+### Core CRO Loop
+| Agent | Model | Schedule | Writes Code? |
+|-------|-------|----------|-------------|
+| conductor | sonnet | Daily 06:00 UTC | No |
+| data-collector | sonnet | Daily 05:00 UTC | No (runs scripts) |
+| analyst | sonnet | Triggered by conductor | No |
+| hypothesis | sonnet | Triggered by conductor | No |
+| implementer | opus | Manual trigger | Yes (Liquid/CSS/JS) |
+| verifier | sonnet | Triggered by conductor | No |
+
+### Traffic & Ads
+| Agent | Model | Schedule | Writes Code? |
+|-------|-------|----------|-------------|
+| ad-watchdog | sonnet | Daily via conductor | No |
+| landing-page-auditor | sonnet | Weekly Monday | No |
+
+### Brand & Content
+| Agent | Model | Schedule | Writes Code? |
+|-------|-------|----------|-------------|
+| brand-analyst | sonnet | On demand | No |
+| seo-content | sonnet | Weekly Monday | Yes (meta tags) |
+| content-writer | sonnet | After seo-content | Yes (blog drafts) |
+
+### Revenue Optimization
+| Agent | Model | Schedule | Writes Code? |
+|-------|-------|----------|-------------|
+| email-optimizer | sonnet | Weekly Monday | No |
+| pricing-strategist | sonnet | Weekly Monday | No |
+| upsell-crosssell | sonnet | Weekly Monday | Yes (Liquid) |
+
+### Customer Intelligence
+| Agent | Model | Schedule | Writes Code? |
+|-------|-------|----------|-------------|
+| review-social-proof | sonnet | Weekly Monday | Yes (Liquid) |
+| customer-cohort | sonnet | Monthly 1st | No |
+| competitor-monitor | sonnet | Weekly Wednesday | No |
+
+### Operations
+| Agent | Model | Schedule | Writes Code? |
+|-------|-------|----------|-------------|
+| inventory-merchandising | sonnet | Daily | No |
+| site-speed-watchdog | sonnet | Daily | No |
 
 ## Safety Rails — NON-NEGOTIABLE
 
@@ -44,8 +92,11 @@ Monday     [seo-content]     → keyword opportunities, meta tag PRs, blog draft
 3. **Never** change pricing (product prices, shipping rates, discount logic)
 4. **Never** delete products, collections, or pages
 5. **Never** modify customer data or order data
-6. Implementer ONLY runs when a hypothesis has `status: "approved"`
-7. All theme changes go through PR review on the theme repo
+6. **Never** publish content as live — always draft status
+7. Implementer ONLY runs when a hypothesis has `status: "approved"`
+8. All theme changes go through PR review on the theme repo
+9. Pricing Strategist provides recommendations only — never auto-implements
+10. Competitor monitoring uses only publicly available data
 
 ## Data Conventions
 

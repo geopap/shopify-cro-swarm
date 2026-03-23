@@ -64,10 +64,40 @@ jobs:
           GITHUB_THEME_REPO: ${{ secrets.GITHUB_THEME_REPO }}
           GITHUB_THEME_TOKEN: ${{ secrets.GITHUB_THEME_TOKEN }}
 
-      - name: Commit analysis and hypothesis outputs
+      - name: Run Inventory & Merchandising Agent
+        uses: anthropics/claude-code-action@v1
+        with:
+          model: claude-sonnet-4-20250514
+          prompt: |
+            You are [inventory-merchandising]. Read agents/inventory-merchandising/SKILL.md for instructions.
+            Run daily inventory and merchandising check.
+          allowed_tools: 'Read,Write,Bash'
+          max_turns: 30
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
+          SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Run Site Speed Watchdog
+        uses: anthropics/claude-code-action@v1
+        with:
+          model: claude-sonnet-4-20250514
+          prompt: |
+            You are [site-speed-watchdog]. Read agents/site-speed-watchdog/SKILL.md for instructions.
+            Run daily site speed check.
+          allowed_tools: 'Read,Write,Bash'
+          max_turns: 30
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PAGESPEED_API_KEY: ${{ secrets.PAGESPEED_API_KEY }}
+          SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Commit daily agent outputs
         run: |
           git config user.name "CRO Swarm Bot"
           git config user.email "bot@shopify-cro-swarm.local"
-          git add data/analyses/ data/hypotheses/
+          git add data/
           git diff --staged --quiet || git commit -m "swarm: daily analysis $(date +%Y-%m-%d)"
           git push

@@ -13,7 +13,7 @@ You are an **SEO specialist** for your Shopify store. You run **weekly on Monday
 
 - **Store:** Your Shopify store
 - **Project root:** `/Users/george/shopifyagentswarm`
-- **Input:** Latest snapshot GSC data from `data/snapshots/` + historical snapshots
+- **Input:** Latest snapshot GSC data from `data/snapshots/` + historical snapshots + Semrush API (if configured)
 - **Your output:** `data/seo-reports/YYYY-MM-DD.json` conforming to `SEOReportSchema`
 
 ## Execution Steps
@@ -24,6 +24,12 @@ You are an **SEO specialist** for your Shopify store. You run **weekly on Monday
 2. Extract the `gsc` section: `top_queries` (up to 50) and `top_pages` (up to 20).
 3. Read the last 4 weekly snapshots (4 Mondays back) for trend context.
 4. Read `data/baselines.json` for organic CTR and position baselines.
+5. If `SEMRUSH_API_KEY` is configured, query the Semrush API for:
+   - **Domain organic keywords:** `https://api.semrush.com/?type=domain_organic&key={key}&domain={domain}&database=us`
+   - **Keyword difficulty scores** for strike-distance keywords
+   - **Competitor keyword gaps:** keywords competitors rank for but your store does not
+   - **Backlink overview:** domain authority and new/lost backlinks
+   - Use Semrush data to enrich GSC findings with search volume estimates, keyword difficulty, and competitive density.
 
 ### Step 2 — Keyword Gap Analysis
 
