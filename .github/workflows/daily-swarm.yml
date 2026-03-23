@@ -1,0 +1,73 @@
+name: Daily CRO Swarm
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # 06:00 UTC daily
+  workflow_dispatch: {} # manual trigger
+  workflow_run:
+    workflows: ['Daily Data Collection']
+    types: [completed]
+
+permissions:
+  contents: write
+
+jobs:
+  conductor:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Run Conductor Agent
+        uses: anthropics/claude-code-action@v1
+        with:
+          model: claude-sonnet-4-20250514
+          prompt: |
+            You are [conductor]. Read agents/conductor/SKILL.md for instructions.
+            Today: $(date +%Y-%m-%d). Execute the daily swarm sequence.
+          allowed_tools: 'Read,Write,Bash'
+          max_turns: 50
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Google Analytics 4
+          GA4_SERVICE_ACCOUNT_KEY: ${{ secrets.GA4_SERVICE_ACCOUNT_KEY }}
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          # Google Search Console
+          GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
+          # Shopify
+          SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
+          SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
+          # Google Ads
+          GOOGLE_ADS_DEVELOPER_TOKEN: ${{ secrets.GOOGLE_ADS_DEVELOPER_TOKEN }}
+          GOOGLE_ADS_CLIENT_ID: ${{ secrets.GOOGLE_ADS_CLIENT_ID }}
+          GOOGLE_ADS_CLIENT_SECRET: ${{ secrets.GOOGLE_ADS_CLIENT_SECRET }}
+          GOOGLE_ADS_REFRESH_TOKEN: ${{ secrets.GOOGLE_ADS_REFRESH_TOKEN }}
+          GOOGLE_ADS_CUSTOMER_ID: ${{ secrets.GOOGLE_ADS_CUSTOMER_ID }}
+          # Meta (Facebook/Instagram) Ads
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          META_AD_ACCOUNT_ID: ${{ secrets.META_AD_ACCOUNT_ID }}
+          # Hotjar
+          HOTJAR_API_KEY: ${{ secrets.HOTJAR_API_KEY }}
+          HOTJAR_SITE_ID: ${{ secrets.HOTJAR_SITE_ID }}
+          # Slack
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          # GitHub theme repo (for implementer context)
+          GITHUB_THEME_REPO: ${{ secrets.GITHUB_THEME_REPO }}
+          GITHUB_THEME_TOKEN: ${{ secrets.GITHUB_THEME_TOKEN }}
+
+      - name: Commit analysis and hypothesis outputs
+        run: |
+          git config user.name "CRO Swarm Bot"
+          git config user.email "bot@shopify-cro-swarm.local"
+          git add data/analyses/ data/hypotheses/
+          git diff --staged --quiet || git commit -m "swarm: daily analysis $(date +%Y-%m-%d)"
+          git push

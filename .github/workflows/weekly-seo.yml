@@ -1,0 +1,55 @@
+name: Weekly SEO Review
+
+on:
+  schedule:
+    - cron: '0 7 * * 1' # Monday 07:00 UTC
+  workflow_dispatch: {} # manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  seo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Run SEO Agent
+        uses: anthropics/claude-code-action@v1
+        with:
+          model: claude-sonnet-4-20250514
+          prompt: |
+            You are [seo-content]. Read agents/seo-content/SKILL.md for instructions.
+            Run weekly SEO review.
+          allowed_tools: 'Read,Write,Bash'
+          max_turns: 50
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Google Search Console
+          GA4_SERVICE_ACCOUNT_KEY: ${{ secrets.GA4_SERVICE_ACCOUNT_KEY }}
+          GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
+          # Shopify
+          SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
+          SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
+          # GitHub theme repo (for meta tag / content PRs)
+          GITHUB_THEME_REPO: ${{ secrets.GITHUB_THEME_REPO }}
+          GITHUB_THEME_TOKEN: ${{ secrets.GITHUB_THEME_TOKEN }}
+          # Slack
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Commit SEO report outputs
+        run: |
+          git config user.name "CRO Swarm Bot"
+          git config user.email "bot@shopify-cro-swarm.local"
+          git add data/seo/
+          git diff --staged --quiet || git commit -m "seo: weekly review $(date +%Y-%m-%d)"
+          git push

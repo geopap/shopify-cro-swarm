@@ -1,0 +1,74 @@
+name: Implement Hypothesis
+
+on:
+  workflow_dispatch:
+    inputs:
+      hypothesis_id:
+        description: 'Hypothesis ID (e.g., HYP-2026-03-23-001)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  implement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Verify hypothesis is approved
+        run: |
+          HYPOTHESIS_FILE=$(find data/hypotheses/ -name '*.json' -exec grep -l '"${{ inputs.hypothesis_id }}"' {} \; | head -1)
+          if [ -z "$HYPOTHESIS_FILE" ]; then
+            echo "::error::Hypothesis ${{ inputs.hypothesis_id }} not found in data/hypotheses/"
+            exit 1
+          fi
+          STATUS=$(node -e "
+            const fs = require('fs');
+            const data = JSON.parse(fs.readFileSync('${HYPOTHESIS_FILE}', 'utf8'));
+            const hyp = Array.isArray(data) ? data.find(h => h.id === '${{ inputs.hypothesis_id }}') : data;
+            console.log(hyp?.status || 'unknown');
+          ")
+          if [ "$STATUS" != "approved" ]; then
+            echo "::error::Hypothesis ${{ inputs.hypothesis_id }} has status '${STATUS}', expected 'approved'"
+            exit 1
+          fi
+          echo "Hypothesis ${{ inputs.hypothesis_id }} is approved. Proceeding with implementation."
+
+      - name: Run Implementer Agent
+        uses: anthropics/claude-code-action@v1
+        with:
+          model: claude-opus-4-20250514
+          prompt: |
+            You are [implementer]. Read agents/implementer/SKILL.md for instructions.
+            Implement hypothesis: ${{ inputs.hypothesis_id }}
+          allowed_tools: 'Read,Write,Bash'
+          max_turns: 50
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Shopify
+          SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
+          SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
+          # GitHub theme repo (for creating PRs)
+          GITHUB_THEME_REPO: ${{ secrets.GITHUB_THEME_REPO }}
+          GITHUB_THEME_TOKEN: ${{ secrets.GITHUB_THEME_TOKEN }}
+          # Slack (for implementation notifications)
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Commit experiment log updates
+        run: |
+          git config user.name "CRO Swarm Bot"
+          git config user.email "bot@shopify-cro-swarm.local"
+          git add data/experiments/ experiment-log.json
+          git diff --staged --quiet || git commit -m "experiment: implement ${{ inputs.hypothesis_id }}"
+          git push

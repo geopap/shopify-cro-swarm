@@ -1,0 +1,16 @@
+{
+  "computed_at": "2026-03-23T00:00:00Z",
+  "period_days": 0,
+  "metrics": {
+    "daily_sessions": { "mean": 0, "stddev": 0 },
+    "conversion_rate": { "mean": 0, "stddev": 0 },
+    "aov": { "mean": 0, "stddev": 0 },
+    "daily_revenue": { "mean": 0, "stddev": 0 },
+    "bounce_rate": { "mean": 0, "stddev": 0 },
+    "cart_abandonment_rate": { "mean": 0, "stddev": 0 },
+    "google_ads_roas": { "mean": 0, "stddev": 0 },
+    "meta_ads_roas": { "mean": 0, "stddev": 0 },
+    "avg_position": { "mean": 0, "stddev": 0 },
+    "organic_ctr": { "mean": 0, "stddev": 0 }
+  }
+}

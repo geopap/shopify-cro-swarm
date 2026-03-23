@@ -1,0 +1,24 @@
+node_modules/
+dist/
+.env
+.env.local
+*.log
+
+# Daily snapshots are generated artifacts — keep baselines and experiment-log in VCS
+data/snapshots/*.json
+data/analyses/*.json
+data/hypotheses/*.json
+data/verifications/*.json
+
+# Brief (private project docs)
+Brief/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
