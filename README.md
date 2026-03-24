@@ -1,6 +1,6 @@
 # Shopify CRO Agent Swarm
 
-Autonomous CRO (Conversion Rate Optimization) agent swarm for Shopify stores. 26 AI agents collect metrics, analyze funnel leaks, generate ranked hypotheses, implement theme changes as PRs, and verify results with statistical tests — all on autopilot via GitHub Actions. Human-approved, data-driven conversion optimization on autopilot.
+Autonomous CRO (Conversion Rate Optimization) agent swarm for Shopify stores. 27 AI agents collect metrics, analyze funnel leaks, generate ranked hypotheses, implement theme changes as PRs, and verify results with statistical tests — all on autopilot via GitHub Actions. Human-approved, data-driven conversion optimization on autopilot.
 
 ## How It Works
 
@@ -17,6 +17,7 @@ Daily
              [site-speed-watchdog]      Tracks Core Web Vitals, alerts on regressions
              [cart-checkout-recovery]   Analyzes cart→checkout micro-funnel drop-offs
              [conductor]                Sends daily digest to Slack
+  06:30 UTC  [dashboard]                Rebuilds interactive dashboard → GitHub Pages
 
 Weekly (Monday)
              [seo-content]              Keyword gap analysis + meta tag optimization
@@ -45,9 +46,13 @@ Manual
   7d later   [verifier]                 Statistical significance test → KEEP / REVERT
 ```
 
+### Live Dashboard
+
+The swarm auto-generates an interactive dashboard at **`https://YOUR_USERNAME.github.io/shopify-cro-swarm/`** — updated daily at 06:30 UTC. It features KPI cards with sparklines, funnel visualization, revenue trends, ad performance charts, experiment tracking, and more. Only panels with connected data sources are shown. Enable GitHub Pages in your repo settings (source: GitHub Actions) to activate it.
+
 You wake up to a Slack digest each morning. If a hypothesis looks good, approve it. The Implementer opens a PR. After 7 days, the Verifier tells you if it worked.
 
-## Agent Roster (26 agents)
+## Agent Roster (27 agents)
 
 ### Core CRO Loop
 
@@ -104,6 +109,7 @@ You wake up to a Slack digest each morning. If a hypothesis looks good, approve 
 | **Inventory & Merchandising** | Stock alerts, dead stock flags, sort order optimization | Sonnet | Daily |
 | **Site Speed Watchdog** | Core Web Vitals tracking, regression alerts | Sonnet | Daily |
 | **Accessibility Auditor** | WCAG 2.1 compliance checks, opens fix PRs | Sonnet | Weekly Monday |
+| **Dashboard** | Builds interactive CRO dashboard, deploys to GitHub Pages | — | Daily 06:30 UTC |
 
 ## Project Structure
 
@@ -116,7 +122,7 @@ shopify-cro-swarm/
 │   ├── weekly-competitor.yml          # Cron: Wednesday 07:00 UTC
 │   ├── monthly-cohort.yml             # Cron: 1st of month
 │   └── implementer.yml               # Manual dispatch only
-├── agents/                            # 26 agent prompt definitions
+├── agents/                            # 27 agent prompt definitions
 │   ├── conductor/SKILL.md
 │   ├── data-collector/SKILL.md
 │   ├── analyst/SKILL.md
@@ -178,6 +184,8 @@ shopify-cro-swarm/
 ├── src/
 │   ├── types/schemas.ts               # Zod schemas for all inter-agent data
 │   └── lib/                           # Config, date utils, file store
+├── dashboard/                         # Generated dashboard (deployed to GitHub Pages)
+│   └── index.html
 ├── CLAUDE.md                          # Agent instructions & safety rails
 ├── package.json
 └── tsconfig.json
@@ -310,7 +318,7 @@ Each agent's prompt is in `agents/<name>/SKILL.md`. Edit these to change analysi
 
 | Component | Monthly Cost |
 |-----------|-------------|
-| Claude API (Sonnet for 25 agents) | ~$150-350 |
+| Claude API (Sonnet for 26 agents) | ~$150-350 |
 | Claude API (Opus for Implementer) | ~$20-50 |
 | GitHub Actions | Free tier |
 | **Total** | **~$170-400/mo** |

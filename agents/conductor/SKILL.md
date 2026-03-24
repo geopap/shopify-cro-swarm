@@ -106,10 +106,28 @@ Field mappings from snapshot:
 - `roas_meta` = `ads.meta_ads.roas`
 - `biggest_bottleneck` from analysis `biggest_leak`
 
-### Step 8 — Send to Slack
+### Step 8 — Update Dashboard Manifest
+
+1. Scan all `data/` subdirectories for JSON files (exclude `.gitkeep`).
+2. Build a list of active data sources: each directory that contains at least one `.json` file.
+3. Compare with the previous manifest in `data/dashboard-manifest.json`.
+4. If any new sources are detected (directory was empty before, now has files), add them to `new_sources`.
+5. Write updated `data/dashboard-manifest.json`:
+
+```json
+{
+  "last_updated": "ISO-8601 timestamp",
+  "active_sources": ["snapshots", "analyses", "hypotheses", "inventory-reports", ...],
+  "new_sources": ["speed-reports"],
+  "note": "Maintained by Conductor. Lists active data sources for the dashboard agent."
+}
+```
+
+### Step 9 — Send to Slack
 
 1. Write the digest to `data/digests/YYYY-MM-DD.json`.
 2. Execute `npx tsx scripts/notify-slack.ts` with the digest file path as argument.
+3. If `new_sources` is non-empty, include in the Slack message: "New data source connected: {source}. Dashboard will update on next build."
 
 ## Error Handling
 
