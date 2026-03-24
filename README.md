@@ -1,6 +1,6 @@
 # Shopify CRO Agent Swarm
 
-Autonomous CRO (Conversion Rate Optimization) agent swarm for Shopify stores. 25 AI agents collect metrics, analyze funnel leaks, generate ranked hypotheses, implement theme changes as PRs, and verify results with statistical tests — all on autopilot via GitHub Actions. Human-approved, data-driven conversion optimization on autopilot.
+Autonomous CRO (Conversion Rate Optimization) agent swarm for Shopify stores. 26 AI agents collect metrics, analyze funnel leaks, generate ranked hypotheses, implement theme changes as PRs, and verify results with statistical tests — all on autopilot via GitHub Actions. Human-approved, data-driven conversion optimization on autopilot.
 
 ## How It Works
 
@@ -30,6 +30,7 @@ Weekly (Monday)
              [customer-journey]         Maps multi-session paths to purchase
              [accessibility-auditor]    WCAG 2.1 compliance checks + fixes
              [retention-winback]        Churn risk scoring + win-back recommendations
+             [translation-localization] i18n audit, missing/stale translations
 
 Weekly (Wednesday)
              [competitor-monitor]       Competitive intelligence report
@@ -46,7 +47,7 @@ Manual
 
 You wake up to a Slack digest each morning. If a hypothesis looks good, approve it. The Implementer opens a PR. After 7 days, the Verifier tells you if it worked.
 
-## Agent Roster (25 agents)
+## Agent Roster (26 agents)
 
 ### Core CRO Loop
 
@@ -74,6 +75,7 @@ You wake up to a Slack digest each morning. If a hypothesis looks good, approve 
 | **Brand Analyst** | Audits store to create brand book (voice, tone, style, visual identity) | Sonnet | On demand |
 | **SEO/Content** | Keyword gap analysis, meta tag optimization (uses Semrush + GSC) | Sonnet | Weekly Monday |
 | **Content Writer** | Writes full blog posts from SEO recommendations, publishes as drafts | Sonnet | After SEO agent |
+| **Translation & Localization** | i18n audit, missing/stale translations, brand voice across locales | Sonnet | Weekly Monday |
 
 ### Revenue Optimization
 
@@ -114,7 +116,7 @@ shopify-cro-swarm/
 │   ├── weekly-competitor.yml          # Cron: Wednesday 07:00 UTC
 │   ├── monthly-cohort.yml             # Cron: 1st of month
 │   └── implementer.yml               # Manual dispatch only
-├── agents/                            # 25 agent prompt definitions
+├── agents/                            # 26 agent prompt definitions
 │   ├── conductor/SKILL.md
 │   ├── data-collector/SKILL.md
 │   ├── analyst/SKILL.md
@@ -139,7 +141,8 @@ shopify-cro-swarm/
 │   ├── accessibility-auditor/SKILL.md
 │   ├── retention-winback/SKILL.md
 │   ├── geo-optimizer/SKILL.md
-│   └── cart-checkout-recovery/SKILL.md
+│   ├── cart-checkout-recovery/SKILL.md
+│   └── translation-localization/SKILL.md
 ├── data/
 │   ├── snapshots/                     # Daily metric snapshots
 │   ├── analyses/                      # Analyst outputs
@@ -161,6 +164,7 @@ shopify-cro-swarm/
 │   ├── retention-reports/             # Retention & win-back outputs
 │   ├── geo-reports/                   # Geo optimizer outputs
 │   ├── cart-recovery-reports/         # Cart & checkout recovery outputs
+│   ├── translation-reports/           # Translation & localization outputs
 │   ├── baselines.json                 # Rolling averages
 │   └── experiment-log.json            # All experiments ever run
 ├── scripts/
@@ -306,7 +310,7 @@ Each agent's prompt is in `agents/<name>/SKILL.md`. Edit these to change analysi
 
 | Component | Monthly Cost |
 |-----------|-------------|
-| Claude API (Sonnet for 24 agents) | ~$150-350 |
+| Claude API (Sonnet for 25 agents) | ~$150-350 |
 | Claude API (Opus for Implementer) | ~$20-50 |
 | GitHub Actions | Free tier |
 | **Total** | **~$170-400/mo** |

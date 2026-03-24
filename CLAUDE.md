@@ -1,6 +1,6 @@
 # Shopify CRO Agent Swarm
 
-Autonomous CRO (Conversion Rate Optimization) agent swarm for any Shopify store. 25 AI agents collect metrics, analyze funnel leaks, generate hypotheses, implement theme changes as PRs, verify results, monitor competitors, optimize email flows, manage inventory, and more — all on autopilot via GitHub Actions.
+Autonomous CRO (Conversion Rate Optimization) agent swarm for any Shopify store. 26 AI agents collect metrics, analyze funnel leaks, generate hypotheses, implement theme changes as PRs, verify results, monitor competitors, optimize email flows, manage inventory, handle i18n translations, and more — all on autopilot via GitHub Actions.
 
 ## Architecture
 
@@ -35,6 +35,7 @@ Weekly
              [customer-journey]        → multi-session journey mapping
              [accessibility-auditor]   → WCAG 2.1 compliance checks
              [retention-winback]       → churn risk + win-back recommendations
+             [translation-localization]→ i18n audit, missing/stale translations
   Wednesday  [competitor-monitor]      → competitive intelligence report
 
 Monthly
@@ -47,7 +48,7 @@ Manual
   7d later   [verifier]                → statistical significance test
 ```
 
-## Agent Roster (25 agents)
+## Agent Roster (26 agents)
 
 ### Core CRO Loop
 | Agent | Model | Schedule | Writes Code? |
@@ -72,6 +73,7 @@ Manual
 | brand-analyst | sonnet | On demand | No |
 | seo-content | sonnet | Weekly Monday | Yes (meta tags) |
 | content-writer | sonnet | After seo-content | Yes (blog drafts) |
+| translation-localization | sonnet | Weekly Monday | No |
 
 ### Revenue Optimization
 | Agent | Model | Schedule | Writes Code? |

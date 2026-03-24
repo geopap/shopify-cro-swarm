@@ -188,6 +188,19 @@ jobs:
           KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
+      - name: Run Translation & Localization Agent
+        uses: anthropics/claude-code-action@v1
+        with:
+          prompt: |
+            You are [translation-localization]. Read agents/translation-localization/SKILL.md for instructions.
+            Run weekly translation and localization audit.
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-sonnet-4-20250514 --max-turns 50 --allowedTools Read,Write,Bash'
+        env:
+          SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
+          SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
       - name: Commit weekly agent outputs
         run: |
           git config user.name "CRO Swarm Bot"
