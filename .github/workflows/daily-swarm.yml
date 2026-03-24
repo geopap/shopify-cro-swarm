@@ -4,17 +4,14 @@ on:
   schedule:
     - cron: '0 6 * * *' # 06:00 UTC daily
   workflow_dispatch: {} # manual trigger
-  workflow_run:
-    workflows: ['Daily Data Collection']
-    types: [completed]
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   conductor:
     runs-on: ubuntu-latest
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     timeout-minutes: 30
 
     steps:
@@ -30,51 +27,39 @@ jobs:
       - name: Run Conductor Agent
         uses: anthropics/claude-code-action@v1
         with:
-          model: claude-sonnet-4-20250514
           prompt: |
             You are [conductor]. Read agents/conductor/SKILL.md for instructions.
             Today: $(date +%Y-%m-%d). Execute the daily swarm sequence.
-          allowed_tools: 'Read,Write,Bash'
-          max_turns: 50
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-sonnet-4-20250514 --max-turns 50 --allowedTools Read,Write,Bash'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          # Google Analytics 4
           GA4_SERVICE_ACCOUNT_KEY: ${{ secrets.GA4_SERVICE_ACCOUNT_KEY }}
           GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
-          # Google Search Console
           GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
-          # Shopify
           SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
           SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
-          # Google Ads
           GOOGLE_ADS_DEVELOPER_TOKEN: ${{ secrets.GOOGLE_ADS_DEVELOPER_TOKEN }}
           GOOGLE_ADS_CLIENT_ID: ${{ secrets.GOOGLE_ADS_CLIENT_ID }}
           GOOGLE_ADS_CLIENT_SECRET: ${{ secrets.GOOGLE_ADS_CLIENT_SECRET }}
           GOOGLE_ADS_REFRESH_TOKEN: ${{ secrets.GOOGLE_ADS_REFRESH_TOKEN }}
           GOOGLE_ADS_CUSTOMER_ID: ${{ secrets.GOOGLE_ADS_CUSTOMER_ID }}
-          # Meta (Facebook/Instagram) Ads
           META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
           META_AD_ACCOUNT_ID: ${{ secrets.META_AD_ACCOUNT_ID }}
-          # Hotjar
           HOTJAR_API_KEY: ${{ secrets.HOTJAR_API_KEY }}
           HOTJAR_SITE_ID: ${{ secrets.HOTJAR_SITE_ID }}
-          # Slack
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          # GitHub theme repo (for implementer context)
           GITHUB_THEME_REPO: ${{ secrets.GITHUB_THEME_REPO }}
           GITHUB_THEME_TOKEN: ${{ secrets.GITHUB_THEME_TOKEN }}
 
       - name: Run Inventory & Merchandising Agent
         uses: anthropics/claude-code-action@v1
         with:
-          model: claude-sonnet-4-20250514
           prompt: |
             You are [inventory-merchandising]. Read agents/inventory-merchandising/SKILL.md for instructions.
             Run daily inventory and merchandising check.
-          allowed_tools: 'Read,Write,Bash'
-          max_turns: 30
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-sonnet-4-20250514 --max-turns 30 --allowedTools Read,Write,Bash'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
           SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -82,14 +67,12 @@ jobs:
       - name: Run Site Speed Watchdog
         uses: anthropics/claude-code-action@v1
         with:
-          model: claude-sonnet-4-20250514
           prompt: |
             You are [site-speed-watchdog]. Read agents/site-speed-watchdog/SKILL.md for instructions.
             Run daily site speed check.
-          allowed_tools: 'Read,Write,Bash'
-          max_turns: 30
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-sonnet-4-20250514 --max-turns 30 --allowedTools Read,Write,Bash'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           PAGESPEED_API_KEY: ${{ secrets.PAGESPEED_API_KEY }}
           SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -97,14 +80,12 @@ jobs:
       - name: Run Cart & Checkout Recovery Agent
         uses: anthropics/claude-code-action@v1
         with:
-          model: claude-sonnet-4-20250514
           prompt: |
             You are [cart-checkout-recovery]. Read agents/cart-checkout-recovery/SKILL.md for instructions.
             Run daily cart and checkout recovery analysis.
-          allowed_tools: 'Read,Write,Bash'
-          max_turns: 30
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-sonnet-4-20250514 --max-turns 30 --allowedTools Read,Write,Bash'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GA4_SERVICE_ACCOUNT_KEY: ${{ secrets.GA4_SERVICE_ACCOUNT_KEY }}
           GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
           SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}

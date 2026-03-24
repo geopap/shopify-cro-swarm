@@ -1,4 +1,4 @@
-name: Monthly Customer Cohort Analysis
+name: Monthly Analysis (Cohort + Geo)
 
 on:
   schedule:
@@ -7,9 +7,10 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
-  cohort:
+  monthly:
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -26,14 +27,12 @@ jobs:
       - name: Run Customer Cohort Analyst
         uses: anthropics/claude-code-action@v1
         with:
-          model: claude-sonnet-4-20250514
           prompt: |
             You are [customer-cohort]. Read agents/customer-cohort/SKILL.md for instructions.
             Run monthly customer cohort analysis.
-          allowed_tools: 'Read,Write,Bash'
-          max_turns: 50
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-sonnet-4-20250514 --max-turns 50 --allowedTools Read,Write,Bash'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
           SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
           GA4_SERVICE_ACCOUNT_KEY: ${{ secrets.GA4_SERVICE_ACCOUNT_KEY }}
@@ -43,14 +42,12 @@ jobs:
       - name: Run Geo & Localization Optimizer
         uses: anthropics/claude-code-action@v1
         with:
-          model: claude-sonnet-4-20250514
           prompt: |
             You are [geo-optimizer]. Read agents/geo-optimizer/SKILL.md for instructions.
             Run monthly geo and localization analysis.
-          allowed_tools: 'Read,Write,Bash'
-          max_turns: 50
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-sonnet-4-20250514 --max-turns 50 --allowedTools Read,Write,Bash'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GA4_SERVICE_ACCOUNT_KEY: ${{ secrets.GA4_SERVICE_ACCOUNT_KEY }}
           GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
           SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}

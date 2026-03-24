@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   implement:
@@ -48,27 +49,22 @@ jobs:
       - name: Run Implementer Agent
         uses: anthropics/claude-code-action@v1
         with:
-          model: claude-opus-4-20250514
           prompt: |
             You are [implementer]. Read agents/implementer/SKILL.md for instructions.
             Implement hypothesis: ${{ inputs.hypothesis_id }}
-          allowed_tools: 'Read,Write,Bash'
-          max_turns: 50
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-opus-4-20250514 --max-turns 50 --allowedTools Read,Write,Bash'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          # Shopify
           SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
           SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
-          # GitHub theme repo (for creating PRs)
           GITHUB_THEME_REPO: ${{ secrets.GITHUB_THEME_REPO }}
           GITHUB_THEME_TOKEN: ${{ secrets.GITHUB_THEME_TOKEN }}
-          # Slack (for implementation notifications)
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Commit experiment log updates
         run: |
           git config user.name "CRO Swarm Bot"
           git config user.email "bot@shopify-cro-swarm.local"
-          git add data/experiments/ experiment-log.json
+          git add data/experiment-log.json
           git diff --staged --quiet || git commit -m "experiment: implement ${{ inputs.hypothesis_id }}"
           git push

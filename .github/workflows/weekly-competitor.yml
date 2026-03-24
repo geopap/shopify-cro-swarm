@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   competitor:
@@ -26,14 +27,12 @@ jobs:
       - name: Run Competitor Monitor
         uses: anthropics/claude-code-action@v1
         with:
-          model: claude-sonnet-4-20250514
           prompt: |
             You are [competitor-monitor]. Read agents/competitor-monitor/SKILL.md for instructions.
             Run weekly competitive intelligence report.
-          allowed_tools: 'Read,Write,Bash'
-          max_turns: 50
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-sonnet-4-20250514 --max-turns 50 --allowedTools Read,Write,Bash'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           COMPETITOR_URLS: ${{ secrets.COMPETITOR_URLS }}
           GA4_SERVICE_ACCOUNT_KEY: ${{ secrets.GA4_SERVICE_ACCOUNT_KEY }}
           GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}

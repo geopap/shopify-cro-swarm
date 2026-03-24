@@ -7,11 +7,12 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   weekly:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
 
     steps:
       - uses: actions/checkout@v4
@@ -26,14 +27,12 @@ jobs:
       - name: Run SEO Agent
         uses: anthropics/claude-code-action@v1
         with:
-          model: claude-sonnet-4-20250514
           prompt: |
             You are [seo-content]. Read agents/seo-content/SKILL.md for instructions.
             Run weekly SEO review.
-          allowed_tools: 'Read,Write,Bash'
-          max_turns: 50
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-sonnet-4-20250514 --max-turns 50 --allowedTools Read,Write,Bash'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GA4_SERVICE_ACCOUNT_KEY: ${{ secrets.GA4_SERVICE_ACCOUNT_KEY }}
           GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
           SEMRUSH_API_KEY: ${{ secrets.SEMRUSH_API_KEY }}
@@ -46,14 +45,12 @@ jobs:
       - name: Run Content Writer
         uses: anthropics/claude-code-action@v1
         with:
-          model: claude-sonnet-4-20250514
           prompt: |
             You are [content-writer]. Read agents/content-writer/SKILL.md for instructions.
             Write content from the latest SEO recommendations.
-          allowed_tools: 'Read,Write,Bash'
-          max_turns: 50
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-sonnet-4-20250514 --max-turns 50 --allowedTools Read,Write,Bash'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
           SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -61,28 +58,24 @@ jobs:
       - name: Run Email Optimizer
         uses: anthropics/claude-code-action@v1
         with:
-          model: claude-sonnet-4-20250514
           prompt: |
             You are [email-optimizer]. Read agents/email-optimizer/SKILL.md for instructions.
             Run weekly email flow audit.
-          allowed_tools: 'Read,Write,Bash'
-          max_turns: 50
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-sonnet-4-20250514 --max-turns 50 --allowedTools Read,Write,Bash'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Run Landing Page Auditor
         uses: anthropics/claude-code-action@v1
         with:
-          model: claude-sonnet-4-20250514
           prompt: |
             You are [landing-page-auditor]. Read agents/landing-page-auditor/SKILL.md for instructions.
             Run weekly landing page audit.
-          allowed_tools: 'Read,Write,Bash'
-          max_turns: 50
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-sonnet-4-20250514 --max-turns 50 --allowedTools Read,Write,Bash'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GA4_SERVICE_ACCOUNT_KEY: ${{ secrets.GA4_SERVICE_ACCOUNT_KEY }}
           GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
           GOOGLE_ADS_DEVELOPER_TOKEN: ${{ secrets.GOOGLE_ADS_DEVELOPER_TOKEN }}
@@ -99,14 +92,12 @@ jobs:
       - name: Run Review & Social Proof Agent
         uses: anthropics/claude-code-action@v1
         with:
-          model: claude-sonnet-4-20250514
           prompt: |
             You are [review-social-proof]. Read agents/review-social-proof/SKILL.md for instructions.
             Run weekly review health audit.
-          allowed_tools: 'Read,Write,Bash'
-          max_turns: 50
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-sonnet-4-20250514 --max-turns 50 --allowedTools Read,Write,Bash'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           JUDGEME_API_TOKEN: ${{ secrets.JUDGEME_API_TOKEN }}
           JUDGEME_SHOP_DOMAIN: ${{ secrets.JUDGEME_SHOP_DOMAIN }}
           SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
@@ -118,14 +109,12 @@ jobs:
       - name: Run Upsell/Cross-sell Agent
         uses: anthropics/claude-code-action@v1
         with:
-          model: claude-sonnet-4-20250514
           prompt: |
             You are [upsell-crosssell]. Read agents/upsell-crosssell/SKILL.md for instructions.
             Run weekly product affinity analysis.
-          allowed_tools: 'Read,Write,Bash'
-          max_turns: 50
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-sonnet-4-20250514 --max-turns 50 --allowedTools Read,Write,Bash'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
           SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
           GITHUB_THEME_REPO: ${{ secrets.GITHUB_THEME_REPO }}
@@ -135,14 +124,12 @@ jobs:
       - name: Run Pricing Strategist
         uses: anthropics/claude-code-action@v1
         with:
-          model: claude-sonnet-4-20250514
           prompt: |
             You are [pricing-strategist]. Read agents/pricing-strategist/SKILL.md for instructions.
             Run weekly pricing analysis.
-          allowed_tools: 'Read,Write,Bash'
-          max_turns: 50
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-sonnet-4-20250514 --max-turns 50 --allowedTools Read,Write,Bash'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
           SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -150,27 +137,23 @@ jobs:
       - name: Run A/B Test Manager
         uses: anthropics/claude-code-action@v1
         with:
-          model: claude-sonnet-4-20250514
           prompt: |
             You are [ab-test-manager]. Read agents/ab-test-manager/SKILL.md for instructions.
             Run weekly A/B test planning and monitoring.
-          allowed_tools: 'Read,Write,Bash'
-          max_turns: 50
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-sonnet-4-20250514 --max-turns 50 --allowedTools Read,Write,Bash'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Run Customer Journey Mapper
         uses: anthropics/claude-code-action@v1
         with:
-          model: claude-sonnet-4-20250514
           prompt: |
             You are [customer-journey]. Read agents/customer-journey/SKILL.md for instructions.
             Run weekly customer journey analysis.
-          allowed_tools: 'Read,Write,Bash'
-          max_turns: 50
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-sonnet-4-20250514 --max-turns 50 --allowedTools Read,Write,Bash'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GA4_SERVICE_ACCOUNT_KEY: ${{ secrets.GA4_SERVICE_ACCOUNT_KEY }}
           GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -178,14 +161,12 @@ jobs:
       - name: Run Accessibility Auditor
         uses: anthropics/claude-code-action@v1
         with:
-          model: claude-sonnet-4-20250514
           prompt: |
             You are [accessibility-auditor]. Read agents/accessibility-auditor/SKILL.md for instructions.
             Run weekly accessibility audit.
-          allowed_tools: 'Read,Write,Bash'
-          max_turns: 50
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-sonnet-4-20250514 --max-turns 50 --allowedTools Read,Write,Bash'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           PAGESPEED_API_KEY: ${{ secrets.PAGESPEED_API_KEY }}
           SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
           SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
@@ -196,14 +177,12 @@ jobs:
       - name: Run Retention & Win-back Agent
         uses: anthropics/claude-code-action@v1
         with:
-          model: claude-sonnet-4-20250514
           prompt: |
             You are [retention-winback]. Read agents/retention-winback/SKILL.md for instructions.
             Run weekly retention and churn analysis.
-          allowed_tools: 'Read,Write,Bash'
-          max_turns: 50
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: '--model claude-sonnet-4-20250514 --max-turns 50 --allowedTools Read,Write,Bash'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
           SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
           KLAVIYO_API_KEY: ${{ secrets.KLAVIYO_API_KEY }}
