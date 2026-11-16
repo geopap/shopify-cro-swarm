@@ -1,5 +1,12 @@
 name: Implement Hypothesis
 
+# Opens a pull request on the theme repository for one approved hypothesis.
+# Two separate human approvals are required:
+#   1. the hypothesis file records who approved it and when (approved_by, approved_at);
+#   2. the job runs in the protected `theme-changes` environment, so a required reviewer
+#      must approve the run in GitHub (Settings → Environments → theme-changes → Required reviewers).
+# The pull request it opens is never auto-merged.
+
 on:
   workflow_dispatch:
     inputs:
@@ -16,6 +23,7 @@ jobs:
   implement:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    environment: theme-changes
 
     steps:
       - uses: actions/checkout@v4
@@ -28,23 +36,29 @@ jobs:
       - run: npm ci
 
       - name: Verify hypothesis is approved
+        env:
+          HYPOTHESIS_ID: ${{ inputs.hypothesis_id }}
         run: |
-          HYPOTHESIS_FILE=$(find data/hypotheses/ -name '*.json' -exec grep -l '"${{ inputs.hypothesis_id }}"' {} \; | head -1)
-          if [ -z "$HYPOTHESIS_FILE" ]; then
-            echo "::error::Hypothesis ${{ inputs.hypothesis_id }} not found in data/hypotheses/"
+          # The input is passed as an environment variable, never interpolated into the script.
+          if ! [[ "$HYPOTHESIS_ID" =~ ^HYP-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{3}$ ]]; then
+            echo "::error::Hypothesis ID must look like HYP-2026-03-23-001"
             exit 1
           fi
-          STATUS=$(node -e "
-            const fs = require('fs');
-            const data = JSON.parse(fs.readFileSync('${HYPOTHESIS_FILE}', 'utf8'));
-            const hyp = Array.isArray(data) ? data.find(h => h.id === '${{ inputs.hypothesis_id }}') : data;
-            console.log(hyp?.status || 'unknown');
-          ")
-          if [ "$STATUS" != "approved" ]; then
-            echo "::error::Hypothesis ${{ inputs.hypothesis_id }} has status '${STATUS}', expected 'approved'"
-            exit 1
-          fi
-          echo "Hypothesis ${{ inputs.hypothesis_id }} is approved. Proceeding with implementation."
+          node --input-type=module -e '
+            import { readdirSync, readFileSync } from "node:fs";
+            const id = process.env.HYPOTHESIS_ID;
+            const files = readdirSync("data/hypotheses").filter((f) => f.endsWith(".json"));
+            let hyp;
+            for (const f of files) {
+              const data = JSON.parse(readFileSync(`data/hypotheses/${f}`, "utf8"));
+              const list = Array.isArray(data) ? data : (data.hypotheses ?? [data]);
+              hyp = list.find((h) => h?.id === id) ?? hyp;
+            }
+            if (!hyp) { console.log(`::error::Hypothesis ${id} not found in data/hypotheses/`); process.exit(1); }
+            if (hyp.status !== "approved") { console.log(`::error::Hypothesis ${id} has status "${hyp.status}", expected "approved"`); process.exit(1); }
+            if (!hyp.approved_by || !hyp.approved_at) { console.log(`::error::Hypothesis ${id} must record approved_by and approved_at`); process.exit(1); }
+            console.log(`Hypothesis ${id} approved by ${hyp.approved_by} at ${hyp.approved_at}. Proceeding.`);
+          '
 
       - name: Run Implementer Agent
         uses: anthropics/claude-code-action@v1
@@ -53,18 +67,17 @@ jobs:
             You are [implementer]. Read agents/implementer/SKILL.md for instructions.
             Implement hypothesis: ${{ inputs.hypothesis_id }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: '--model claude-opus-4-20250514 --max-turns 50 --allowedTools Read,Write,Bash'
+          claude_args: '--model claude-opus-5-5 --max-turns 50 --allowedTools "Read,Write,Edit,Glob,Grep,Bash(git:*),Bash(gh pr create:*)"'
         env:
-          SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
-          SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
           GITHUB_THEME_REPO: ${{ secrets.GITHUB_THEME_REPO }}
           GITHUB_THEME_TOKEN: ${{ secrets.GITHUB_THEME_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Commit experiment log updates
+        env:
+          HYPOTHESIS_ID: ${{ inputs.hypothesis_id }}
         run: |
           git config user.name "CRO Swarm Bot"
           git config user.email "bot@shopify-cro-swarm.local"
           git add data/experiment-log.json
-          git diff --staged --quiet || git commit -m "experiment: implement ${{ inputs.hypothesis_id }}"
+          git diff --staged --quiet || git commit -m "experiment: implement $HYPOTHESIS_ID"
           git push

@@ -13,7 +13,7 @@ You are a **competitive intelligence analyst** tracking competitor Shopify store
 
 ## Context
 
-- **Project root:** `/Users/george/shopifyagentswarm`
+- **Project root:** the repository root (all paths below are relative to it)
 - **Input:** `COMPETITOR_URLS` env var (comma-separated list of competitor store URLs), previous competitor reports in `data/competitor-reports/`, GA4/GSC data from `data/snapshots/YYYY-MM-DD.json`
 - **Your output:** Competitor intelligence report at `data/competitor-reports/YYYY-MM-DD.json` conforming to `CompetitorReportSchema`
 

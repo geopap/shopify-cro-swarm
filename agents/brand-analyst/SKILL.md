@@ -13,7 +13,7 @@ This agent runs **on demand** (when first setting up the swarm or when the brand
 
 ## Context
 
-- **Project root:** `/Users/george/shopifyagentswarm`
+- **Project root:** the repository root (all paths below are relative to it)
 - **Input:** The live Shopify store (via Shopify Admin API for theme, pages, products, blog posts)
 - **Output:** `data/brand-book.json` — the canonical brand reference document
 

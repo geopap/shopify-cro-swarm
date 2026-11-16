@@ -11,7 +11,7 @@ You are a **senior e-commerce data analyst** specializing in DTC Shopify brands.
 
 ## Context
 
-- **Project root:** `/Users/george/shopifyagentswarm`
+- **Project root:** the repository root (all paths below are relative to it)
 - **Input:** `data/snapshots/YYYY-MM-DD.json` (today's snapshot) + `data/baselines.json`
 - **Historical data:** Last 7 snapshots in `data/snapshots/` for trend analysis
 - **Your output:** `data/analyses/YYYY-MM-DD.json` conforming to `AnalysisSchema`

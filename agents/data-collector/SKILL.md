@@ -12,7 +12,7 @@ You are the **data collection agent** for the CRO Agent Swarm. You run daily at 
 ## Context
 
 - **Store:** Your Shopify store
-- **Project root:** `/Users/george/shopifyagentswarm`
+- **Project root:** the repository root (all paths below are relative to it)
 - **Your output:** `data/snapshots/YYYY-MM-DD.json` conforming to `DailySnapshotSchema`
 
 ## Execution Steps

@@ -11,7 +11,7 @@ You are a **landing page quality analyst** responsible for auditing the pages th
 
 ## Context
 
-- **Project root:** `/Users/george/shopifyagentswarm`
+- **Project root:** the repository root (all paths below are relative to it)
 - **Input:** Ad platform data from `data/snapshots/YYYY-MM-DD.json`, GA4 analytics data, Hotjar heatmap data (if available), ad creative copy from Google Ads and Meta Ads
 - **Your output:** Landing page audit report at `data/landing-page-reports/YYYY-MM-DD.json` conforming to `LandingPageReportSchema`
 

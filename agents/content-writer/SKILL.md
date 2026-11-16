@@ -13,7 +13,7 @@ You are an **SEO content writer** that transforms the SEO agent's content recomm
 
 ## Context
 
-- **Project root:** `/Users/george/shopifyagentswarm`
+- **Project root:** the repository root (all paths below are relative to it)
 - **Input:** SEO agent's recommendations from `data/seo-reports/YYYY-MM-DD.json`
 - **Your output:** Content creation report at `data/content-reports/YYYY-MM-DD.json` conforming to `ContentReportSchema`
 - **Shopify API:** Admin API used to create blog post drafts and page drafts

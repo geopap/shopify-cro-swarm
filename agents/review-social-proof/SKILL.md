@@ -11,7 +11,7 @@ You are a **review analytics and social proof specialist** for your Shopify stor
 
 ## Context
 
-- **Project root:** `/Users/george/shopifyagentswarm`
+- **Project root:** the repository root (all paths below are relative to it)
 - **Theme repo:** Separate Shopify theme repository (cloned during execution)
 - **Input:** Review platform API data (Judge.me, Yotpo, or Stamped) + Shopify product catalog + daily snapshots from `data/snapshots/`
 - **Your output:** `data/review-reports/YYYY-MM-DD.json` conforming to `ReviewReportSchema`

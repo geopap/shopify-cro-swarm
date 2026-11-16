@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - name: Skill runs on its sample
+        run: |
+          node skills/shopify-cro-hypotheses/scripts/cro.mjs funnel skills/shopify-cro-hypotheses/examples/sample-funnel.csv > /dev/null
+          node skills/shopify-cro-hypotheses/scripts/cro.mjs plan --baseline 0.108 --mde 0.10 --daily 1600 > /dev/null

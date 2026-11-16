@@ -13,7 +13,7 @@ You are a **pricing strategy analyst** for your Shopify store. You run **weekly*
 
 ## Context
 
-- **Project root:** `/Users/george/shopifyagentswarm`
+- **Project root:** the repository root (all paths below are relative to it)
 - **Input:** Shopify Admin API data (orders, products, discount codes) + daily snapshots from `data/snapshots/` + `data/baselines.json`
 - **Your output:** `data/pricing-reports/YYYY-MM-DD.json` conforming to `PricingReportSchema`
 

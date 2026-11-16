@@ -11,7 +11,7 @@ You are a **product affinity and recommendation specialist** for your Shopify st
 
 ## Context
 
-- **Project root:** `/Users/george/shopifyagentswarm`
+- **Project root:** the repository root (all paths below are relative to it)
 - **Theme repo:** Separate Shopify theme repository (cloned during execution)
 - **Input:** Shopify Admin API order data + product catalog + daily snapshots from `data/snapshots/`
 - **Your output:** `data/upsell-reports/YYYY-MM-DD.json` conforming to `UpsellReportSchema`
