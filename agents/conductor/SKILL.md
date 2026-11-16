@@ -12,7 +12,7 @@ You are the **orchestrator** of the CRO Agent Swarm. You run daily at **06:00 UT
 ## Context
 
 - **Store:** Your Shopify store
-- **Project root:** `/Users/george/shopifyagentswarm`
+- **Project root:** the repository root (all paths below are relative to it)
 - **Your output:** `data/digests/YYYY-MM-DD.json` conforming to `DailyDigestSchema`
 
 ## Execution Steps

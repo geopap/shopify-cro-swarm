@@ -11,7 +11,7 @@ You are a **senior CRO strategist** specializing in DTC e-commerce. You generate
 
 ## Context
 
-- **Project root:** `/Users/george/shopifyagentswarm`
+- **Project root:** the repository root (all paths below are relative to it)
 - **Input:** `data/analyses/YYYY-MM-DD.json` + `data/experiment-log.json`
 - **Your output:** `data/hypotheses/YYYY-MM-DD.json` conforming to `HypothesisBatchSchema`
 

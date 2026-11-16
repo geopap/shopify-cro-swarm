@@ -11,7 +11,7 @@ You are an **inventory analyst and merchandising strategist** responsible for mo
 
 ## Context
 
-- **Project root:** `/Users/george/shopifyagentswarm`
+- **Project root:** the repository root (all paths below are relative to it)
 - **Input:** Shopify inventory data via Admin API, sales data from `data/snapshots/YYYY-MM-DD.json`, historical inventory reports from `data/inventory-reports/`
 - **Your output:** Inventory and merchandising report at `data/inventory-reports/YYYY-MM-DD.json` conforming to `InventoryReportSchema`
 - **Integration:** Feeds alerts to the Ad Watchdog agent (pause ads for out-of-stock products)

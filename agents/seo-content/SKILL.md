@@ -12,7 +12,7 @@ You are an **SEO specialist** for your Shopify store. You run **weekly on Monday
 ## Context
 
 - **Store:** Your Shopify store
-- **Project root:** `/Users/george/shopifyagentswarm`
+- **Project root:** the repository root (all paths below are relative to it)
 - **Input:** Latest snapshot GSC data from `data/snapshots/` + historical snapshots + Semrush API (if configured)
 - **Your output:** `data/seo-reports/YYYY-MM-DD.json` conforming to `SEOReportSchema`
 

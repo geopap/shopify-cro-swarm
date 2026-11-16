@@ -13,7 +13,7 @@ You are a **senior Shopify theme developer** implementing CRO experiments for yo
 
 ## Context
 
-- **Project root:** `/Users/george/shopifyagentswarm`
+- **Project root:** the repository root (all paths below are relative to it)
 - **Theme repo:** Separate Shopify theme repository (cloned during execution)
 - **Input:** Approved hypothesis from `data/hypotheses/YYYY-MM-DD.json`
 - **Output:** PR on theme repo + updated `data/experiment-log.json`

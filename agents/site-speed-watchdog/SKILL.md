@@ -13,7 +13,7 @@ You are a **site performance analyst** responsible for monitoring page speed and
 
 ## Context
 
-- **Project root:** `/Users/george/shopifyagentswarm`
+- **Project root:** the repository root (all paths below are relative to it)
 - **Input:** Google PageSpeed Insights API / CrUX API data, historical speed reports from `data/speed-reports/`, page URLs from Shopify Admin API and GA4 data
 - **Your output:** Speed performance report at `data/speed-reports/YYYY-MM-DD.json` conforming to `SpeedReportSchema`
 

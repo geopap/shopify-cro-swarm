@@ -1,6 +1,18 @@
 # Shopify CRO Agent Swarm
 
-Autonomous CRO (Conversion Rate Optimization) agent swarm for Shopify stores. 27 AI agents collect metrics, analyze funnel leaks, generate ranked hypotheses, implement theme changes as PRs, and verify results with statistical tests — all on autopilot via GitHub Actions. Human-approved, data-driven conversion optimization on autopilot.
+[![CI](https://github.com/geopap/shopify-cro-swarm/actions/workflows/ci.yml/badge.svg)](https://github.com/geopap/shopify-cro-swarm/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+Conversion rate optimisation (CRO) agent swarm for Shopify stores. 26 Claude agents and a dashboard collect metrics, find funnel leaks, generate ranked hypotheses, open theme changes as pull requests and verify results with statistical tests, on a GitHub Actions schedule. **A person approves every change before it is built, and again before it is merged.**
+
+> **Just want the core idea?** [`skills/shopify-cro-hypotheses`](skills/shopify-cro-hypotheses) is a free, standalone Claude Code skill: give it a funnel export by device, and it finds the biggest leak, writes ranked hypotheses and plans each A/B test. Offline, no API keys. [See an example report.](skills/shopify-cro-hypotheses/examples/sample-report.md)
+
+## Who it's for
+
+| | What they get |
+|---|---|
+| **E-commerce and growth leads** | A daily answer to "where are we losing orders, and what should we test next?", with evidence and a test plan instead of opinions |
+| **Product and CRO teams** | Hypotheses in a fixed format, PIE scoring, pre-registered tests, and a verifier that says KEEP or REVERT on statistical grounds |
+| **Technology leaders** | Agents with least-privilege tools and secrets, a protected approval environment for theme changes, pull requests that are never auto-merged, and a test suite in CI |
 
 ## How It Works
 
@@ -116,13 +128,14 @@ You wake up to a Slack digest each morning. If a hypothesis looks good, approve 
 ```
 shopify-cro-swarm/
 ├── .github/workflows/
+│   ├── ci.yml                         # Tests and type-check on every push and PR
 │   ├── daily-collect.yml              # Cron: 05:00 UTC
 │   ├── daily-swarm.yml                # Cron: 06:00 UTC
 │   ├── weekly-agents.yml              # Cron: Monday 07:00 UTC
 │   ├── weekly-competitor.yml          # Cron: Wednesday 07:00 UTC
 │   ├── monthly-cohort.yml             # Cron: 1st of month
 │   └── implementer.yml               # Manual dispatch only
-├── agents/                            # 27 agent prompt definitions
+├── agents/                            # 26 agent prompt definitions
 │   ├── conductor/SKILL.md
 │   ├── data-collector/SKILL.md
 │   ├── analyst/SKILL.md
@@ -173,6 +186,8 @@ shopify-cro-swarm/
 │   ├── translation-reports/           # Translation & localization outputs
 │   ├── baselines.json                 # Rolling averages
 │   └── experiment-log.json            # All experiments ever run
+├── skills/
+│   └── shopify-cro-hypotheses/        # Free standalone Claude Code skill
 ├── scripts/
 │   ├── collect-all.ts                 # Orchestrates all collectors
 │   ├── collect-ga4.ts                 # Google Analytics 4
@@ -251,7 +266,11 @@ Add all your `.env` values as [GitHub repository secrets](https://docs.github.co
 
 ### 5. Enable the workflows
 
-The GitHub Actions workflows run on cron schedules:
+Scheduled workflows are **off by default**, so a fork does not fail every day without credentials. To switch them on, add a repository variable `SWARM_ENABLED` = `true` (Settings → Secrets and variables → Actions → Variables).
+
+Create an environment called **`theme-changes`** (Settings → Environments) and add yourself, or whoever owns the store theme, as a **required reviewer**. The Implementer runs in that environment, so every theme change waits for that person's approval in GitHub.
+
+Once enabled, the workflows run on cron schedules:
 
 - **Daily collection** at 05:00 UTC
 - **Daily swarm** (analysis + hypotheses + digest) at 06:00 UTC
@@ -274,11 +293,11 @@ Check Slack for your daily digest:
 ### 7. Approve and implement
 
 When you see a hypothesis you like:
-1. Update its status to `"approved"` in the hypotheses JSON file
+1. In the hypotheses JSON file, set its `status` to `"approved"` and record `approved_by` and `approved_at`
 2. Go to Actions > "Implement Hypothesis" > Run workflow
 3. Enter the hypothesis ID (e.g., `HYP-2026-03-23-001`)
-4. Review the PR on your theme repo
-5. Merge when ready
+4. Approve the run when GitHub asks (the `theme-changes` environment)
+5. Review the PR on your theme repo, and merge when ready
 
 After 7 days, the Verifier tells you if the change had a statistically significant impact.
 
@@ -291,8 +310,20 @@ Enforced across all agents — **cannot be overridden**:
 - Pricing is **never** changed automatically — advisory recommendations only
 - Products, collections, and pages are **never** deleted
 - Content is **never** published as live — always draft status
-- The Implementer **only** runs on hypotheses with `status: "approved"`
+- The Implementer **only** runs on hypotheses with `status: "approved"`, a named approver and a timestamp, and only after a required reviewer approves the run in the `theme-changes` environment
 - Competitor monitoring uses only publicly available data
+
+How this is enforced in the workflows, not just in the prompts:
+
+| Control | How |
+|---|---|
+| **Least-privilege tools** | Each agent gets only the tools it needs. Analysis agents can read and write files but have no shell and no network. Only agents that call an API get `curl`; only agents that open pull requests get `git` and `gh pr create`. |
+| **Least-privilege secrets** | Each workflow step receives only the credentials its agent uses. The Conductor, which orchestrates everything, holds only the Slack webhook. |
+| **Untrusted data** | Store content, reviews, competitor pages and API responses are treated as data, never as instructions (see `CLAUDE.md`). |
+| **Input handling** | Workflow inputs are passed as environment variables and validated, never pasted into shell scripts. |
+| **Opt-in schedules** | Nothing runs on a schedule until `SWARM_ENABLED` is set. |
+
+For production use, also restrict outbound network access on the runner (for example with an egress allow-list) so that an agent with `curl` can reach only the APIs it is meant to call.
 
 ## Customization
 
@@ -316,9 +347,11 @@ Each agent's prompt is in `agents/<name>/SKILL.md`. Edit these to change analysi
 
 ## Cost Estimate
 
+Rough estimate for a mid-sized store; actual cost depends on catalogue size, traffic and how many agents you enable.
+
 | Component | Monthly Cost |
 |-----------|-------------|
-| Claude API (Sonnet for 26 agents) | ~$150-350 |
+| Claude API (Sonnet for 25 agents) | ~$150-350 |
 | Claude API (Opus for Implementer) | ~$20-50 |
 | GitHub Actions | Free tier |
 | **Total** | **~$170-400/mo** |
@@ -336,3 +369,9 @@ Each agent's prompt is in `agents/<name>/SKILL.md`. Edit these to change analysi
 ## License
 
 MIT
+
+## About
+
+Built by **George Papadongonas** ([georgepapadongonas.com](https://georgepapadongonas.com)), a product and digital leader focused on AI value creation. More projects on [github.com/geopap](https://github.com/geopap), including the [Product Strategy Cockpit](https://github.com/geopap/product-strategy-cockpit), which uses the same experiment discipline (pre-registration, sample ratio checks, guardrails) at product-strategy level.
+
+*No real store data is included. All examples are synthetic.*

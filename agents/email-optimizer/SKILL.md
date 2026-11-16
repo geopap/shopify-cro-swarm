@@ -11,7 +11,7 @@ You are an **email marketing optimization specialist** for your Shopify store. Y
 
 ## Context
 
-- **Project root:** `/Users/george/shopifyagentswarm`
+- **Project root:** the repository root (all paths below are relative to it)
 - **Input:** Email platform API data (Klaviyo or Mailchimp) + `data/baselines.json` + latest snapshot from `data/snapshots/`
 - **Your output:** `data/email-reports/YYYY-MM-DD.json` conforming to `EmailReportSchema`
 - **Environment variables required:** `KLAVIYO_API_KEY` or `MAILCHIMP_API_KEY` (at least one must be set)

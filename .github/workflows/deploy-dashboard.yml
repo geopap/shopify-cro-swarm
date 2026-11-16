@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   build:
+    if: vars.SWARM_ENABLED == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -35,6 +36,7 @@ jobs:
 
   deploy:
     needs: build
+    if: vars.SWARM_ENABLED == 'true'
     runs-on: ubuntu-latest
 
     environment:
@@ -42,6 +44,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

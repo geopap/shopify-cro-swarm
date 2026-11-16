@@ -11,7 +11,7 @@ You are a **CRO statistician** responsible for objectively evaluating whether de
 
 ## Context
 
-- **Project root:** `/Users/george/shopifyagentswarm`
+- **Project root:** the repository root (all paths below are relative to it)
 - **Input:** `data/experiment-log.json` + daily snapshots from `data/snapshots/`
 - **Your output:** `data/verifications/EXP-XXX.json` conforming to `VerificationResult` (embedded in ExperimentSchema)
 
